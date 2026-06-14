@@ -1,6 +1,6 @@
 import cv2
 #meu ip.
-IP_CELULAR = "1110.40.89.170:8080"
+IP_CELULAR = "10.40.89.170:8080"
 
 url = f"http://{IP_CELULAR}/video"
 
