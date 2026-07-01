@@ -1,0 +1,1 @@
+python criar_estrutura.py
