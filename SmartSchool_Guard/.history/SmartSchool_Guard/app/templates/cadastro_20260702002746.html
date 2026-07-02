@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block titulo %}Cadastrar Aluno - SmartSchool Guard{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{{ url_for('alunos.listar') }}">Alunos</a></li>
+<li class="breadcrumb-item active" aria-current="page">Cadastrar</li>
+{% endblock %}
+
+{% block titulo_pagina %}Cadastrar Novo Aluno{% endblock %}
+
+{% block botoes_cabecalho %}
+<a href="{{ url_for('alunos.listar') }}" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i> Voltar
+</a>
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="row g-4">
+    <!-- Formulário -->
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-person-badge me-2"></i> Dados do Aluno
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('alunos.cadastrar') }}"
+                      enctype="multipart/form-data" id="form-cadastro">
+
+                    <div class="row g-3">
+                        <!-- Nome -->
+                        <div class="col-md-8">
+                            <label for="nome" class="form-label">
+                                Nome Completo <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="nome" name="nome"
+                                   placeholder="Ex: João Silva" value="{{ dados.get('nome', '') }}"
+                                   required minlength="3">
+                        </div>
+
+                        <!-- Número -->
+                        <div class="col-md-4">
+                            <label for="numero" class="form-label">
+                                Número <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="numero" name="numero"
+                                   placeholder="Ex: 001" value="{{ dados.get('numero', '') }}"
+                                   required>
+                        </div>
+
+                        <!-- Turma -->
+                        <div class="col-md-4">
+                            <label for="turma" class="form-label">Turma</label>
+                            <input type="text" class="form-control" id="turma" name="turma"
+                                   placeholder="Ex: 12A" value="{{ dados.get('turma', '') }}">
+                        </div>
+
+                        <!-- Nome do Pai -->
+                        <div class="col-md-8">
+                            <label for="nome_pai" class="form-label">Nome do Pai/Responsável</label>
+                            <input type="text" class="form-control" id="nome_pai" name="nome_pai"
+                                   placeholder="Nome completo do responsável"
+                                   value="{{ dados.get('nome_pai', '') }}">
+                        </div>
+
+                        <!-- Telefone do Pai -->
+                        <div class="col-md-6">
+                            <label for="telefone_pai" class="form-label">
+                                Telefone do Pai <small class="text-muted">(WhatsApp)</small>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">+258</span>
+                                <input type="tel" class="form-control" id="telefone_pai"
+                                       name="telefone_pai" placeholder="84 000 0000"
+                                       value="{{ dados.get('telefone_pai', '') }}">
+                            </div>
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Para receber notificações de entrada/saída
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg" id="btn-cadastrar">
+                            <i class="bi bi-check-circle me-2"></i> Cadastrar Aluno
+                        </button>
+                        <a href="{{ url_for('alunos.listar') }}" class="btn btn-outline-secondary btn-lg ms-2">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Captura de Foto -->
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-camera me-2"></i> Foto do Aluno
+                </h5>
+            </div>
+            <div class="card-body text-center">
+
+                <!-- Área da Câmara -->
+                <div class="bg-dark rounded mb-3 position-relative" style="height: 320px; overflow: hidden;">
+                    <video id="video-preview" autoplay playsinline
+                           style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                    </video>
+                    <canvas id="canvas-preview" style="display: none;"></canvas>
+                    <div id="placeholder-camera" class="d-flex flex-column align-items-center justify-content-center h-100 text-white">
+                        <i class="bi bi-camera-video fs-1 mb-2"></i>
+                        <p class="mb-0">Câmara desligada</p>
+                        <small class="text-white-50">Clique em "Ligar Câmara"</small>
+                    </div>
+                </div>
+
+                <!-- Controlos da Câmara -->
+                <div class="btn-group mb-3 w-100">
+                    <button type="button" class="btn btn-outline-primary" id="btn-ligar-camera">
+                        <i class="bi bi-camera-video me-1"></i> Ligar Câmara
+                    </button>
+                    <button type="button" class="btn btn-outline-success" id="btn-capturar" disabled>
+                        <i class="bi bi-camera me-1"></i> Capturar
+                    </button>
+                    <button type="button" class="btn btn-outline-danger" id="btn-desligar-camera" disabled>
+                        <i class="bi bi-stop-circle me-1"></i>
+                    </button>
+                </div>
+
+                <!-- Barra de Qualidade -->
+                <div id="qualidade-container" class="d-none">
+                    <label class="form-label small">Qualidade da Foto</label>
+                    <div class="progress" style="height: 25px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                             id="barra-qualidade" role="progressbar"
+                             style="width: 0%;" aria-valuenow="0"
+                             aria-valuemin="0" aria-valuemax="100">
+                            <span id="texto-qualidade">0%</span>
+                        </div>
+                    </div>
+                    <small id="dicas-qualidade" class="text-muted"></small>
+                </div>
+
+                <!-- Input file escondido -->
+                <input type="file" id="input-foto" name="foto" accept="image/*" capture="environment"
+                       class="d-none">
+
+                <!-- Preview da foto capturada -->
+                <div id="preview-container" class="d-none mt-3">
+                    <img id="foto-preview" src="" alt="Preview" class="img-fluid rounded"
+                         style="max-height: 200px;">
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts_extra %}
+<script src="{{ url_for('static', filename='js/cadastro.js') }}"></script>
+{% endblock %}

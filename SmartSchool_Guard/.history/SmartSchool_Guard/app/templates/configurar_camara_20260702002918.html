@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block titulo %}Configurar Câmara - SmartSchool Guard{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{{ url_for('configuracoes.index') }}">Configurações</a></li>
+<li class="breadcrumb-item active" aria-current="page">Câmara IP</li>
+{% endblock %}
+
+{% block titulo_pagina %}Configurar Câmara IP{% endblock %}
+
+{% block conteudo %}
+
+<div class="row g-4">
+    <!-- Configuração -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-camera me-2"></i> Configuração da Câmara
+                </h5>
+            </div>
+            <div class="card-body">
+
+                <!-- Status Atual -->
+                <div class="alert alert-info">
+                    <strong>IP Atual:</strong>
+                    <span id="ip-atual" class="fw-bold">{{ ip_atual }}</span>
+                    <span id="status-badge" class="badge bg-secondary ms-2">Verificando...</span>
+                </div>
+
+                <!-- Formulário -->
+                <div class="mb-3">
+                    <label for="input-ip" class="form-label">
+                        <i class="bi bi-globe me-1"></i> Novo IP da Câmara
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text">http://</span>
+                        <input type="text" class="form-control" id="input-ip"
+                               placeholder="192.168.1.100:8080" value="{{ ip_atual }}">
+                    </div>
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Abra a app IP Webcam no telemóvel e copie o IP mostrado no ecrã.
+                    </small>
+                </div>
+
+                <div class="btn-group w-100">
+                    <button type="button" class="btn btn-primary" id="btn-testar">
+                        <i class="bi bi-search me-1"></i> Testar Ligação
+                    </button>
+                    <button type="button" class="btn btn-success" id="btn-guardar">
+                        <i class="bi bi-check-circle me-1"></i> Guardar
+                    </button>
+                </div>
+
+                <!-- Resultado do Teste -->
+                <div id="resultado-teste" class="mt-3 d-none"></div>
+
+            </div>
+        </div>
+
+        <!-- Ajuda -->
+        <div class="card shadow-sm mt-3">
+            <div class="card-header bg-white">
+                <h6 class="mb-0"><i class="bi bi-question-circle me-2"></i> Como Configurar</h6>
+            </div>
+            <div class="card-body">
+                <ol class="small mb-0">
+                    <li>Instale a app <strong>IP Webcam</strong> no telemóvel Android.</li>
+                    <li>Ligue o telemóvel e o computador à <strong>mesma rede Wi-Fi</strong>.</li>
+                    <li>Abra a app e toque em <strong>"Start Server"</strong>.</li>
+                    <li>Copie o <strong>IP</strong> que aparece no ecrã do telemóvel.</li>
+                    <li>Cole aqui e clique em <strong>"Testar Ligação"</strong>.</li>
+                    <li>Se aparecer a pré-visualização, clique em <strong>"Guardar"</strong>.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pré-visualização -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-eye me-2"></i> Pré-visualização
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="bg-dark rounded" style="min-height: 350px; display: flex; align-items: center; justify-content: center;">
+                    <img id="preview-imagem" src="" alt="Preview da Câmara"
+                         style="max-width: 100%; max-height: 400px; display: none;">
+                    <div id="preview-placeholder" class="text-white text-center p-5">
+                        <i class="bi bi-camera-video-off fs-1 d-block mb-3"></i>
+                        <p>Clique em "Testar Ligação" para ver a pré-visualização</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Histórico de IPs -->
+        {% if historico %}
+        <div class="card shadow-sm mt-3">
+            <div class="card-header bg-white">
+                <h6 class="mb-0"><i class="bi bi-clock-history me-2"></i> Histórico de IPs</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush" style="max-height: 150px; overflow-y: auto;">
+                    {% for h in historico %}
+                    <div class="list-group-item d-flex justify-content-between py-1 small">
+                        <span><code>{{ h.ip }}</code></span>
+                        <span class="text-muted">{{ h.data.strftime('%d/%m/%Y %H:%M') if h.data else '---' }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts_extra %}
+<script src="{{ url_for('static', filename='js/camara.js') }}"></script>
+{% endblock %}

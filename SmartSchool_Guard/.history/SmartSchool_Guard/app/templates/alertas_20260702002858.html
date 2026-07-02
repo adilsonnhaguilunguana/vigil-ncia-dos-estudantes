@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block titulo %}Alertas - SmartSchool Guard{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active" aria-current="page">Alertas</li>
+{% endblock %}
+
+{% block titulo_pagina %}Alertas de Segurança{% endblock %}
+
+{% block botoes_cabecalho %}
+{% if alertas_ativos > 0 %}
+<form method="POST" action="{{ url_for('alertas.resolver_todos') }}" class="d-inline"
+      onsubmit="return confirm('Resolver TODOS os alertas pendentes?')">
+    <button type="submit" class="btn btn-outline-success">
+        <i class="bi bi-check-all me-1"></i> Resolver Todos
+    </button>
+</form>
+{% endif %}
+{% endblock %}
+
+{% block conteudo %}
+
+<!-- Cards de Resumo -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card border-danger shadow-sm">
+            <div class="card-body text-center">
+                <h2 class="text-danger mb-0">{{ alertas_ativos }}</h2>
+                <small class="text-muted">Alertas Ativos</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-warning shadow-sm">
+            <div class="card-body text-center">
+                <h2 class="text-warning mb-0">{{ criticos_ativos }}</h2>
+                <small class="text-muted">Críticos</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-info shadow-sm">
+            <div class="card-body text-center">
+                <h2 class="text-info mb-0">{{ alertas_hoje }}</h2>
+                <small class="text-muted">Alertas Hoje</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('alertas.listar') }}" class="row g-2 align-items-end">
+            <div class="col-md-2">
+                <label class="form-label small">Tipo</label>
+                <select class="form-select" name="tipo">
+                    <option value="">Todos</option>
+                    <option value="desconhecido" {% if tipo == 'desconhecido' %}selected{% endif %}>Desconhecido</option>
+                    <option value="emergencia" {% if tipo == 'emergencia' %}selected{% endif %}>Emergência</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">Severidade</label>
+                <select class="form-select" name="severidade">
+                    <option value="">Todas</option>
+                    <option value="info" {% if severidade == 'info' %}selected{% endif %}>🟢 Info</option>
+                    <option value="aviso" {% if severidade == 'aviso' %}selected{% endif %}>🟡 Aviso</option>
+                    <option value="alerta" {% if severidade == 'alerta' %}selected{% endif %}>🟠 Alerta</option>
+                    <option value="critico" {% if severidade == 'critico' %}selected{% endif %}>🔴 Crítico</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">Status</label>
+                <select class="form-select" name="resolvido">
+                    <option value="">Todos</option>
+                    <option value="0" {% if resolvido == '0' %}selected{% endif %}>Pendentes</option>
+                    <option value="1" {% if resolvido == '1' %}selected{% endif %}>Resolvidos</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">Data Início</label>
+                <input type="date" class="form-control" name="data_inicio" value="{{ data_inicio }}">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">Data Fim</label>
+                <input type="date" class="form-control" name="data_fim" value="{{ data_fim }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-funnel me-1"></i> Filtrar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Lista de Alertas -->
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="list-group list-group-flush">
+            {% for alerta in alertas %}
+            <a href="{{ url_for('alertas.detalhes', id=alerta.id) }}"
+               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center
+                      {% if not alerta.resolvido %}list-group-item-danger bg-opacity-10{% endif %}">
+                <div>
+                    <div class="fw-bold">
+                        {% if alerta.severidade == 'critico' %}🔴
+                        {% elif alerta.severidade == 'alerta' %}🟠
+                        {% elif alerta.severidade == 'aviso' %}🟡
+                        {% else %}🟢{% endif %}
+                        {{ alerta.tipo | upper }}
+                    </div>
+                    <small class="text-muted">{{ alerta.descricao[:100] }}{% if alerta.descricao|length > 100 %}...{% endif %}</small>
+                </div>
+                <div class="text-end">
+                    <small class="d-block text-muted">
+                        {{ alerta.hora.strftime('%d/%m/%Y %H:%M') if alerta.hora else '---' }}
+                    </small>
+                    {% if not alerta.resolvido %}
+                        <span class="badge bg-danger">Pendente</span>
+                    {% else %}
+                        <span class="badge bg-success">Resolvido</span>
+                    {% endif %}
+                </div>
+            </a>
+            {% endfor %}
+
+            {% if not alertas %}
+            <div class="list-group-item text-center text-muted py-5">
+                <i class="bi bi-check-circle fs-1 d-block mb-3 text-success"></i>
+                <p>Nenhum alerta encontrado.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

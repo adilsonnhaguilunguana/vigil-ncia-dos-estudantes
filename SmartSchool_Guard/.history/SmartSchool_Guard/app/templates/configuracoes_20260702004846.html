@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block titulo %}Configurações - SmartSchool Guard{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active" aria-current="page">Configurações</li>
+{% endblock %}
+
+{% block titulo_pagina %}Configurações do Sistema{% endblock %}
+
+{% block conteudo %}
+
+<!-- Abas de Configuração -->
+<ul class="nav nav-tabs mb-4" id="tab-config" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="tab-geral" data-bs-toggle="tab"
+                data-bs-target="#geral" type="button" role="tab">
+            <i class="bi bi-sliders me-1"></i> Geral
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-notificacoes" data-bs-toggle="tab"
+                data-bs-target="#notificacoes" type="button" role="tab">
+            <i class="bi bi-bell me-1"></i> Notificações
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-conexoes" data-bs-toggle="tab"
+                data-bs-target="#conexoes" type="button" role="tab">
+            <i class="bi bi-wifi me-1"></i> Conexões
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <!-- Aba: Geral -->
+    <div class="tab-pane fade show active" id="geral">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-sliders me-2"></i> Configurações Gerais
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('configuracoes.atualizar') }}">
+                    <div class="row g-4">
+                        <!-- Confiança Mínima -->
+                        <div class="col-md-6">
+                            <label for="confianca_minima" class="form-label fw-bold">
+                                <i class="bi bi-graph-up me-1"></i> Confiança Mínima (%)
+                            </label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="confianca_minima"
+                                       name="confianca_minima" min="30" max="100"
+                                       value="{{ configs.get('confianca_minima', '60') }}">
+                                <span class="input-group-text">%</span>
+                            </div>
+                            <small class="text-muted">
+                                Percentagem mínima para identificar um aluno. Recomendado: 60-80%
+                            </small>
+                        </div>
+
+                        <!-- Qualidade Mínima -->
+                        <div class="col-md-6">
+                            <label for="qualidade_minima" class="form-label fw-bold">
+                                <i class="bi bi-camera me-1"></i> Qualidade Mínima da Foto (%)
+                            </label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="qualidade_minima"
+                                       name="qualidade_minima" min="30" max="100"
+                                       value="{{ configs.get('qualidade_minima', '60') }}">
+                                <span class="input-group-text">%</span>
+                            </div>
+                            <small class="text-muted">
+                                Qualidade mínima para aceitar foto de cadastro. Recomendado: 60%
+                            </small>
+                        </div>
+
+                        <!-- Cooldown -->
+                        <div class="col-md-6">
+                            <label for="cooldown_segundos" class="form-label fw-bold">
+                                <i class="bi bi-hourglass-split me-1"></i> Cooldown (segundos)
+                            </label>
+                            <input type="number" class="form-control" id="cooldown_segundos"
+                                   name="cooldown_segundos" min="10" max="300"
+                                   value="{{ configs.get('cooldown_segundos', '30') }}">
+                            <small class="text-muted">
+                                Tempo mínimo entre registos do mesmo aluno. Evita duplicados.
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-circle me-2"></i> Guardar Configurações
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aba: Notificações -->
+    <div class="tab-pane fade" id="notificacoes">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-bell me-2"></i> Configurações de Notificações
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('configuracoes.atualizar') }}">
+                    <div class="mb-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox"
+                                   id="notificar_pais" name="notificar_pais" value="true"
+                                   {% if configs.get('notificar_pais', 'true') == 'true' %}checked{% endif %}>
+                            <label class="form-check-label fw-bold" for="notificar_pais">
+                                <i class="bi bi-whatsapp text-success me-1"></i>
+                                Notificar Pais (WhatsApp)
+                            </label>
+                        </div>
+                        <small class="text-muted ms-4">
+                            Envia mensagem WhatsApp quando o aluno entra ou sai da escola.
+                        </small>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox"
+                                   id="alerta_som" name="alerta_som" value="true"
+                                   {% if configs.get('alerta_som', 'true') == 'true' %}checked{% endif %}>
+                            <label class="form-check-label fw-bold" for="alerta_som">
+                                <i class="bi bi-volume-up text-warning me-1"></i>
+                                Alerta Sonoro
+                            </label>
+                        </div>
+                        <small class="text-muted ms-4">
+                            Emite alerta sonoro (buzzer) quando uma pessoa desconhecida é detectada.
+                        </small>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-circle me-2"></i> Guardar Configurações
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aba: Conexões -->
+    <div class="tab-pane fade" id="conexoes">
+        <div class="row g-4">
+            <!-- Câmara IP -->
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-camera-video me-2"></i> Câmara IP
+                        </h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <i class="bi bi-camera-video text-primary" style="font-size: 3rem;"></i>
+                        <h6 class="mt-2">IP Atual</h6>
+                        <code class="fs-5">{{ configs.get('ip_camara', 'Não configurada') }}</code>
+                        <div class="mt-3">
+                            <a href="{{ url_for('configuracoes.configurar_camara') }}"
+                               class="btn btn-primary">
+                                <i class="bi bi-gear me-1"></i> Configurar Câmara
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ESP8266 -->
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-cpu me-2"></i> ESP8266
+                        </h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <i class="bi bi-cpu text-info" style="font-size: 3rem;"></i>
+                        <h6 class="mt-2">IP do ESP8266</h6>
+                        <code class="fs-5">{{ configs.get('esp_ip', 'Não configurado') }}</code>
+                        <div class="mt-3">
+                            <a href="{{ url_for('configuracoes.configurar_zona') }}"
+                               class="btn btn-outline-primary me-2">
+                                <i class="bi bi-bounding-box me-1"></i> Linha Virtual
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

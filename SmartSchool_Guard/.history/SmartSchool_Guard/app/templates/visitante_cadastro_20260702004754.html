@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block titulo %}
+    {% if modo_edicao %}Editar Visitante{% else %}Cadastrar Visitante{% endif %}
+    - SmartSchool Guard
+{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{{ url_for('visitantes.listar') }}">Visitantes</a></li>
+<li class="breadcrumb-item active" aria-current="page">
+    {% if modo_edicao %}Editar{% else %}Cadastrar{% endif %}
+</li>
+{% endblock %}
+
+{% block titulo_pagina %}
+    {% if modo_edicao %}Editar Visitante{% else %}Novo Visitante{% endif %}
+{% endblock %}
+
+{% block botoes_cabecalho %}
+<a href="{{ url_for('visitantes.listar') }}" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i> Voltar
+</a>
+{% endblock %}
+
+{% block conteudo %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-person-badge me-2"></i>
+                    {% if modo_edicao %}
+                        Editar Dados do Visitante
+                    {% else %}
+                        Dados do Visitante
+                    {% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST"
+                      action="{% if modo_edicao %}{{ url_for('visitantes.editar', id=visitante.id) }}{% else %}{{ url_for('visitantes.cadastrar') }}{% endif %}">
+
+                    <div class="row g-3">
+                        <!-- Nome -->
+                        <div class="col-md-8">
+                            <label for="nome" class="form-label">
+                                Nome Completo <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input type="text" class="form-control" id="nome" name="nome"
+                                       placeholder="Nome do visitante"
+                                       value="{{ visitante.nome if visitante else dados.get('nome', '') }}"
+                                       required minlength="3">
+                            </div>
+                        </div>
+
+                        <!-- PIN -->
+                        <div class="col-md-4">
+                            <label class="form-label">PIN de Acesso</label>
+                            {% if visitante and visitante.pin %}
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-key"></i></span>
+                                    <input type="text" class="form-control text-center fw-bold fs-5"
+                                           value="{{ visitante.pin }}" readonly>
+                                    <button type="button" class="btn btn-outline-warning"
+                                            onclick="window.location.href='{{ url_for('visitantes.novo_pin', id=visitante.id) }}'">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </button>
+                                </div>
+                                <small class="text-muted">Clique no botão para gerar novo PIN</small>
+                            {% else %}
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox"
+                                           name="gerar_pin" value="1" id="gerarPin"
+                                           {% if not modo_edicao %}checked{% endif %}>
+                                    <label class="form-check-label" for="gerarPin">
+                                        Gerar PIN de acesso
+                                    </label>
+                                </div>
+                                <small class="text-muted">PIN de 4 dígitos para acesso temporário</small>
+                            {% endif %}
+                        </div>
+
+                        <!-- Motivo -->
+                        <div class="col-12">
+                            <label for="motivo" class="form-label">
+                                Motivo da Visita <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" id="motivo" name="motivo" rows="2"
+                                      placeholder="Ex: Reunião com a direção, Entrega de documentos..."
+                                      required>{{ visitante.motivo if visitante else dados.get('motivo', '') }}</textarea>
+                        </div>
+
+                        <!-- Autorizado por -->
+                        <div class="col-md-6">
+                            <label for="autorizado_por" class="form-label">
+                                Autorizado por <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person-check"></i></span>
+                                <input type="text" class="form-control" id="autorizado_por"
+                                       name="autorizado_por"
+                                       placeholder="Nome de quem autorizou"
+                                       value="{{ visitante.autorizado_por if visitante else dados.get('autorizado_por', '') }}"
+                                       required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            {% if modo_edicao %}
+                                <i class="bi bi-check-circle me-2"></i> Atualizar Visitante
+                            {% else %}
+                                <i class="bi bi-person-plus me-2"></i> Registar Visitante
+                            {% endif %}
+                        </button>
+                        <a href="{{ url_for('visitantes.listar') }}" class="btn btn-outline-secondary btn-lg">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Informações sobre o PIN -->
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-white">
+                <h6 class="mb-0">
+                    <i class="bi bi-info-circle me-2"></i> Sobre o PIN de Acesso
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-1-circle text-primary me-2 fs-5"></i>
+                            <div>
+                                <strong>Geração Automática</strong>
+                                <p class="text-muted small mb-0">O sistema gera um PIN de 4 dígitos automaticamente.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-2-circle text-primary me-2 fs-5"></i>
+                            <div>
+                                <strong>Uso na Porta</strong>
+                                <p class="text-muted small mb-0">O visitante digita o PIN no teclado da porta para entrar.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-3-circle text-primary me-2 fs-5"></i>
+                            <div>
+                                <strong>PIN Temporário</strong>
+                                <p class="text-muted small mb-0">O PIN expira quando o visitante regista a saída.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-4-circle text-primary me-2 fs-5"></i>
+                            <div>
+                                <strong>Novo PIN</strong>
+                                <p class="text-muted small mb-0">Pode gerar um novo PIN a qualquer momento se necessário.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block titulo %}Erro - SmartSchool Guard{% endblock %}
+
+{% block breadcrumb %}{% endblock %}
+
+{% block conteudo %}
+<div class="text-center py-5 mt-5">
+    <div class="mb-4">
+        <i class="bi bi-exclamation-triangle text-warning" style="font-size: 6rem;"></i>
+    </div>
+    <h1 class="display-1 fw-bold text-muted">{{ codigo }}</h1>
+    <h3 class="mb-3">{{ mensagem }}</h3>
+    <p class="text-muted mb-4">{{ descricao }}</p>
+    <a href="{{ url_for('dashboard.index') }}" class="btn btn-primary btn-lg">
+        <i class="bi bi-house me-2"></i> Voltar ao Dashboard
+    </a>
+</div>
+{% endblock %}

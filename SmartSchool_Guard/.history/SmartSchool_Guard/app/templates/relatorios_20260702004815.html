@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+
+{% block titulo %}Relatórios - SmartSchool Guard{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active" aria-current="page">Relatórios</li>
+{% endblock %}
+
+{% block titulo_pagina %}Relatórios{% endblock %}
+
+{% block botoes_cabecalho %}
+<div class="btn-group">
+    <button type="button" class="btn btn-outline-success" onclick="exportarCSV('registos')">
+        <i class="bi bi-file-earmark-excel me-1"></i> Exportar Registos
+    </button>
+    <button type="button" class="btn btn-outline-info" onclick="exportarCSV('alunos')">
+        <i class="bi bi-file-earmark-spreadsheet me-1"></i> Exportar Alunos
+    </button>
+</div>
+{% endblock %}
+
+{% block conteudo %}
+
+<!-- Abas de Relatórios -->
+<ul class="nav nav-tabs mb-4" id="tab-relatorios" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {% if tipo == 'frequencia' %}active{% endif %}"
+                id="tab-frequencia" data-bs-toggle="tab" data-bs-target="#frequencia"
+                type="button" role="tab">
+            <i class="bi bi-graph-up me-1"></i> Frequência Diária
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {% if tipo == 'assiduidade' %}active{% endif %}"
+                id="tab-assiduidade" data-bs-toggle="tab" data-bs-target="#assiduidade"
+                type="button" role="tab">
+            <i class="bi bi-bar-chart me-1"></i> Assiduidade por Turma
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {% if tipo == 'horas-pico' %}active{% endif %}"
+                id="tab-horas-pico" data-bs-toggle="tab" data-bs-target="#horas-pico"
+                type="button" role="tab">
+            <i class="bi bi-clock me-1"></i> Horas de Pico
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link {% if tipo == 'atrasos' %}active{% endif %}"
+                id="tab-atrasos" data-bs-toggle="tab" data-bs-target="#atrasos"
+                type="button" role="tab">
+            <i class="bi bi-alarm me-1"></i> Atrasos
+        </button>
+    </li>
+</ul>
+
+<!-- Filtros Comuns -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form id="form-filtros" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small text-muted">Data Início</label>
+                <input type="date" class="form-control" name="data_inicio"
+                       id="filtro-data-inicio" value="{{ data_inicio }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted">Data Fim</label>
+                <input type="date" class="form-control" name="data_fim"
+                       id="filtro-data-fim" value="{{ data_fim }}">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small text-muted">Turma</label>
+                <select class="form-select" name="turma" id="filtro-turma">
+                    <option value="">Todas</option>
+                    {% for t in turmas %}
+                        <option value="{{ t }}">{{ t }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-primary w-100" onclick="aplicarFiltros()">
+                    <i class="bi bi-funnel me-1"></i> Aplicar
+                </button>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-secondary w-100" onclick="limparFiltros()">
+                    <i class="bi bi-x-circle me-1"></i> Limpar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Conteúdo das Abas -->
+<div class="tab-content" id="conteudo-relatorios">
+
+    <!-- Frequência Diária -->
+    <div class="tab-pane fade {% if tipo == 'frequencia' %}show active{% endif %}" id="frequencia">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-graph-up me-2"></i> Frequência Diária
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="grafico-frequencia" height="350"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assiduidade por Turma -->
+    <div class="tab-pane fade {% if tipo == 'assiduidade' %}show active{% endif %}" id="assiduidade">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-bar-chart me-2"></i> Assiduidade por Turma (%)
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="grafico-assiduidade" height="350"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Horas de Pico -->
+    <div class="tab-pane fade {% if tipo == 'horas-pico' %}show active{% endif %}" id="horas-pico">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-clock me-2"></i> Movimento por Hora do Dia
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="grafico-horas-pico" height="350"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Atrasos -->
+    <div class="tab-pane fade {% if tipo == 'atrasos' %}show active{% endif %}" id="atrasos">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-alarm me-2"></i> Alunos com Mais Atrasos
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="tabela-atrasos">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Aluno</th>
+                                <th>Número</th>
+                                <th>Turma</th>
+                                <th>Total de Atrasos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                    A carregar dados...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts_extra %}
+<script src="{{ url_for('static', filename='js/relatorios.js') }}"></script>
+
+<script>
+    // ============================================================
+    // INICIALIZAR RELATÓRIOS
+    // ============================================================
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const tipo = '{{ tipo }}';
+
+        switch(tipo) {
+            case 'frequencia':
+                carregarFrequenciaDiaria();
+                break;
+            case 'assiduidade':
+                carregarAssiduidadeTurma();
+                break;
+            case 'horas-pico':
+                carregarHorasPico();
+                break;
+            case 'atrasos':
+                carregarAtrasos();
+                break;
+        }
+    });
+
+    // ============================================================
+    // FILTROS
+    // ============================================================
+
+    function aplicarFiltros() {
+        const dataInicio = document.getElementById('filtro-data-inicio').value;
+        const dataFim = document.getElementById('filtro-data-fim').value;
+        const turma = document.getElementById('filtro-turma').value;
+
+        const params = new URLSearchParams();
+        const abaAtiva = document.querySelector('.tab-pane.active').id;
+
+        params.set('tipo', obterTipoPorAba(abaAtiva));
+        if (dataInicio) params.set('data_inicio', dataInicio);
+        if (dataFim) params.set('data_fim', dataFim);
+        if (turma) params.set('turma', turma);
+
+        window.location.href = '/relatorios?' + params.toString();
+    }
+
+    function limparFiltros() {
+        window.location.href = '/relatorios?tipo=' + obterTipoPorAba(
+            document.querySelector('.tab-pane.active').id
+        );
+    }
+
+    function obterTipoPorAba(abaId) {
+        switch(abaId) {
+            case 'frequencia': return 'frequencia';
+            case 'assiduidade': return 'assiduidade';
+            case 'horas-pico': return 'horas-pico';
+            case 'atrasos': return 'atrasos';
+            default: return 'frequencia';
+        }
+    }
+
+    // ============================================================
+    // CARREGAR ATRASOS
+    // ============================================================
+
+    function carregarAtrasos() {
+        const params = new URLSearchParams(window.location.search);
+        const dataInicio = params.get('data_inicio') || '';
+        const dataFim = params.get('data_fim') || '';
+        const turma = params.get('turma') || '';
+
+        fetch(`/api/relatorios/atrasos?data_inicio=${dataInicio}&data_fim=${dataFim}&turma=${turma}&limite=20`)
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.querySelector('#tabela-atrasos tbody');
+                if (!tbody) return;
+
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                <i class="bi bi-check-circle fs-3 d-block mb-2 text-success"></i>
+                                Nenhum atraso registado no período.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = data.map((a, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>
+                            <a href="/alunos/${a.id}" class="text-decoration-none fw-bold">
+                                ${a.nome}
+                            </a>
+                        </td>
+                        <td><code>${a.numero}</code></td>
+                        <td>${a.turma || '---'}</td>
+                        <td>
+                            <span class="badge bg-danger fs-6">${a.total_atrasos} atraso(s)</span>
+                        </td>
+                    </tr>
+                `).join('');
+            })
+            .catch(error => {
+                console.error('Erro ao carregar atrasos:', error);
+                const tbody = document.querySelector('#tabela-atrasos tbody');
+                if (tbody) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center text-danger py-4">
+                                Erro ao carregar dados.
+                            </td>
+                        </tr>
+                    `;
+                }
+            });
+    }
+
+    // ============================================================
+    // NAVEGAÇÃO ENTRE ABAS (carrega dados ao clicar)
+    // ============================================================
+
+    document.querySelectorAll('#tab-relatorios button').forEach(button => {
+        button.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-bs-target').replace('#', '');
+            const tipo = obterTipoPorAba(targetId);
+            window.location.href = '/relatorios?tipo=' + tipo;
+        });
+    });
+</script>
+{% endblock %}

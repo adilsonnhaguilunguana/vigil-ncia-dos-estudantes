@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block titulo %}Login - SmartSchool Guard{% endblock %}
+
+{% block breadcrumb %}{% endblock %}
+{% block cabecalho_pagina %}{% endblock %}
+
+{% block conteudo %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5 col-lg-4">
+
+        <div class="text-center mb-4">
+            <i class="bi bi-shield-check text-primary" style="font-size: 4rem;"></i>
+            <h2 class="fw-bold mt-2">SmartSchool Guard</h2>
+            <p class="text-muted">Sistema Inteligente de Monitoramento Escolar</p>
+        </div>
+
+        <div class="card shadow">
+            <div class="card-body p-4">
+
+                <h5 class="card-title text-center mb-4">
+                    <i class="bi bi-lock me-2"></i> Iniciar Sessão
+                </h5>
+
+                <form method="POST" action="{{ url_for('auth.login') }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">
+                            <i class="bi bi-person me-1"></i> Username
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                            <input type="text" class="form-control" id="username" name="username"
+                                   placeholder="admin ou porteiro" required autofocus>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">
+                            <i class="bi bi-key me-1"></i> Senha
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                            <input type="password" class="form-control" id="password" name="password"
+                                   placeholder="••••••••" required>
+                            <button class="btn btn-outline-secondary" type="button"
+                                    onclick="togglePassword()" tabindex="-1">
+                                <i class="bi bi-eye" id="toggle-password-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> Entrar
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-3">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Credenciais padrão: admin / admin123
+                    </small>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+    function togglePassword() {
+        const input = document.getElementById('password');
+        const icon = document.getElementById('toggle-password-icon');
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.replace('bi-eye', 'bi-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.replace('bi-eye-slash', 'bi-eye');
+        }
+    }
+</script>
+{% endblock %}

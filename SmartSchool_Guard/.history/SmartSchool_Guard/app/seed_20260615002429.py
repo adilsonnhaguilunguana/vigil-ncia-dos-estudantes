@@ -34,7 +34,7 @@ CONFIGURACOES_INICIAIS = {
     'notificar_pais': 'true',
 
     # Câmara IP (valor inicial, depois o utilizador muda pela web)
-    'ip_camara': '172.21.24.210:8080',
+    'ip_camara': '192.168.1.100:8080',
 }
 
 # ============================================================

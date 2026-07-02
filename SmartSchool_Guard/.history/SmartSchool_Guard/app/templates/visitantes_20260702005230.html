@@ -1,0 +1,349 @@
+{% extends "base.html" %}
+
+{% block titulo %}Visitantes - SmartSchool Guard{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active" aria-current="page">Visitantes</li>
+{% endblock %}
+
+{% block titulo_pagina %}Gestão de Visitantes{% endblock %}
+
+{% block botoes_cabecalho %}
+<a href="{{ url_for('visitantes.cadastrar') }}" class="btn btn-primary">
+    <i class="bi bi-person-plus me-1"></i> Novo Visitante
+</a>
+{% endblock %}
+
+{% block conteudo %}
+
+<!-- Cards de Resumo -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-warning shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-person-badge text-warning fs-1"></i>
+                <h3 class="text-warning mb-0 mt-2">{{ ativos_agora }}</h3>
+                <small class="text-muted">Visitantes Ativos Agora</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-info shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-calendar-check text-info fs-1"></i>
+                <h3 class="text-info mb-0 mt-2">{{ total_hoje }}</h3>
+                <small class="text-muted">Total de Visitas Hoje</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-success shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-clock-history text-success fs-1"></i>
+                <h3 class="text-success mb-0 mt-2">{{ total if total else 0 }}</h3>
+                <small class="text-muted">Total no Período</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-primary shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-key text-primary fs-1"></i>
+                <h3 class="text-primary mb-0 mt-2">
+                    {% set com_pin = visitantes|selectattr('pin')|list|length %}
+                    {{ com_pin }}
+                </h3>
+                <small class="text-muted">Com PIN de Acesso</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('visitantes.listar') }}" class="row g-2 align-items-end">
+            <div class="col-md-2">
+                <label class="form-label small text-muted">Status</label>
+                <select class="form-select" name="status">
+                    <option value="ativos" {% if status == 'ativos' %}selected{% endif %}>
+                        🟢 Ativos (dentro)
+                    </option>
+                    <option value="todos" {% if status == 'todos' %}selected{% endif %}>
+                        📋 Todos
+                    </option>
+                    <option value="historico" {% if status == 'historico' %}selected{% endif %}>
+                        📁 Histórico (já saíram)
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small text-muted">Data Início</label>
+                <input type="date" class="form-control" name="data_inicio"
+                       value="{{ data_inicio }}">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small text-muted">Data Fim</label>
+                <input type="date" class="form-control" name="data_fim"
+                       value="{{ data_fim }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted">Pesquisar</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control" name="pesquisa"
+                           placeholder="Nome, motivo ou autorizador..."
+                           value="{{ pesquisa }}">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-funnel me-1"></i> Filtrar
+                </button>
+                <a href="{{ url_for('visitantes.listar') }}" class="btn btn-outline-secondary w-100 mt-1">
+                    <i class="bi bi-x-circle me-1"></i> Limpar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tabela de Visitantes -->
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Nome</th>
+                        <th>Motivo</th>
+                        <th>Entrada</th>
+                        <th>Saída</th>
+                        <th>Permanência</th>
+                        <th>Autorizado por</th>
+                        <th>PIN</th>
+                        <th>Status</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for v in visitantes %}
+                    <tr class="{% if not v.hora_saida %}table-warning bg-opacity-10{% endif %}">
+                        <td><small>{{ v.id }}</small></td>
+                        <td class="fw-bold">
+                            <i class="bi bi-person-circle me-2 {% if not v.hora_saida %}text-warning{% else %}text-muted{% endif %}"></i>
+                            {{ v.nome }}
+                        </td>
+                        <td>
+                            <span title="{{ v.motivo }}">
+                                {{ v.motivo[:40] if v.motivo else '---' }}{% if v.motivo and v.motivo|length > 40 %}...{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <small>
+                                {{ v.hora_entrada.strftime('%d/%m/%Y') if v.hora_entrada else '---' }}
+                                <br>
+                                {{ v.hora_entrada.strftime('%H:%M') if v.hora_entrada else '' }}
+                            </small>
+                        </td>
+                        <td>
+                            {% if v.hora_saida %}
+                                <small>
+                                    {{ v.hora_saida.strftime('%d/%m/%Y') if v.hora_saida else '---' }}
+                                    <br>
+                                    {{ v.hora_saida.strftime('%H:%M') if v.hora_saida else '' }}
+                                </small>
+                            {% else %}
+                                <span class="text-muted">---</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if v.hora_saida and v.hora_entrada %}
+                                {% set diff = (v.hora_saida - v.hora_entrada).total_seconds() %}
+                                {% set horas = (diff // 3600)|int %}
+                                {% set minutos = ((diff % 3600) // 60)|int %}
+                                {% if horas > 0 %}
+                                    {{ horas }}h {{ minutos }}min
+                                {% else %}
+                                    {{ minutos }}min
+                                {% endif %}
+                            {% elif not v.hora_saida %}
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-hourglass-split me-1"></i> Presente
+                                </span>
+                            {% else %}
+                                ---
+                            {% endif %}
+                        </td>
+                        <td>{{ v.autorizado_por or '---' }}</td>
+                        <td>
+                            {% if v.pin %}
+                                <code class="bg-light px-2 py-1 rounded">{{ v.pin }}</code>
+                            {% else %}
+                                <span class="text-muted">---</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not v.hora_saida %}
+                                <span class="badge bg-warning text-dark">Dentro</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Saiu</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <!-- Registar Saída -->
+                                {% if not v.hora_saida %}
+                                    <form method="POST"
+                                          action="{{ url_for('visitantes.registrar_saida', id=v.id) }}"
+                                          class="d-inline"
+                                          onsubmit="return confirm('Registar saída de {{ v.nome }}?')">
+                                        <button type="submit" class="btn btn-outline-warning"
+                                                title="Registar Saída">
+                                            <i class="bi bi-box-arrow-right"></i>
+                                        </button>
+                                    </form>
+                                {% endif %}
+
+                                <!-- Editar -->
+                                <a href="{{ url_for('visitantes.editar', id=v.id) }}"
+                                   class="btn btn-outline-primary" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+
+                                <!-- Novo PIN -->
+                                {% if not v.hora_saida %}
+                                    <form method="POST"
+                                          action="{{ url_for('visitantes.novo_pin', id=v.id) }}"
+                                          class="d-inline"
+                                          onsubmit="return confirm('Gerar novo PIN para {{ v.nome }}?')">
+                                        <button type="submit" class="btn btn-outline-info"
+                                                title="Novo PIN">
+                                            <i class="bi bi-arrow-repeat"></i>
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                    {% if not visitantes %}
+                    <tr>
+                        <td colspan="10" class="text-center text-muted py-5">
+                            <i class="bi bi-person-badge fs-1 d-block mb-3"></i>
+                            <p class="mb-1">Nenhum visitante encontrado.</p>
+                            <a href="{{ url_for('visitantes.cadastrar') }}" class="btn btn-primary mt-2">
+                                <i class="bi bi-person-plus me-1"></i> Registar Primeiro Visitante
+                            </a>
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Paginação -->
+    {% if total_paginas > 1 %}
+    <div class="card-footer">
+        <nav aria-label="Paginação de visitantes">
+            <ul class="pagination justify-content-center mb-0">
+                <li class="page-item {% if pagina == 1 %}disabled{% endif %}">
+                    <a class="page-link" href="?pagina={{ pagina - 1 }}&status={{ status }}&data_inicio={{ data_inicio }}&data_fim={{ data_fim }}&pesquisa={{ pesquisa }}">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+
+                {% for p in range(1, total_paginas + 1) %}
+                    {% if p == pagina %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ p }}</span>
+                        </li>
+                    {% elif p <= 2 or p > total_paginas - 2 or (p >= pagina - 1 and p <= pagina + 1) %}
+                        <li class="page-item">
+                            <a class="page-link" href="?pagina={{ p }}&status={{ status }}&data_inicio={{ data_inicio }}&data_fim={{ data_fim }}&pesquisa={{ pesquisa }}">{{ p }}</a>
+                        </li>
+                    {% elif p == 3 or p == total_paginas - 2 %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                <li class="page-item {% if pagina == total_paginas %}disabled{% endif %}">
+                    <a class="page-link" href="?pagina={{ pagina + 1 }}&status={{ status }}&data_inicio={{ data_inicio }}&data_fim={{ data_fim }}&pesquisa={{ pesquisa }}">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Legenda Rápida -->
+<div class="card shadow-sm mt-4">
+    <div class="card-body py-2">
+        <div class="d-flex flex-wrap gap-3 justify-content-center">
+            <span>
+                <span class="badge bg-warning text-dark me-1">Dentro</span>
+                = Visitante ainda na escola
+            </span>
+            <span>
+                <span class="badge bg-secondary me-1">Saiu</span>
+                = Já registou saída
+            </span>
+            <span>
+                <code class="me-1">PIN</code>
+                = Código de acesso temporário
+            </span>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+    // ============================================================
+    // CONFIRMAÇÃO PARA REGISTAR SAÍDA
+    // ============================================================
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Todos os formulários de saída já têm onsubmit com confirm()
+        // Este código adicional é para melhorar a UX
+
+        const botoesSaida = document.querySelectorAll('form[action*="/saida"] button');
+        botoesSaida.forEach(botao => {
+            botao.addEventListener('click', function(evento) {
+                const nome = this.closest('tr').querySelector('td:nth-child(2)').textContent.trim();
+                if (!confirm(`Confirmar saída de "${nome}"?\n\nEsta ação registará a hora de saída e invalidará o PIN (se existir).`)) {
+                    evento.preventDefault();
+                }
+            });
+        });
+    });
+
+    // ============================================================
+    // COPIAR PIN PARA CLIPBOARD
+    // ============================================================
+
+    document.querySelectorAll('code').forEach(codigo => {
+        if (codigo.textContent.trim().match(/^\d{4,6}$/)) {
+            codigo.style.cursor = 'pointer';
+            codigo.title = 'Clique para copiar o PIN';
+
+            codigo.addEventListener('click', function() {
+                const pin = this.textContent.trim();
+                navigator.clipboard.writeText(pin).then(() => {
+                    mostrarToast(`PIN ${pin} copiado!`, 'success', 2000);
+                }).catch(() => {
+                    mostrarToast('Erro ao copiar PIN.', 'error');
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

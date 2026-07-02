@@ -1,0 +1,58 @@
+# ==========================================
+# AMBIENTE VIRTUAL
+# ==========================================
+venv/
+env/
+.venv/
+
+# ==========================================
+# CREDENCIAIS (NUNCA NO GITHUB)
+# ==========================================
+.env
+*.env
+!*.env.example
+
+# ==========================================
+# UPLOADS (fotos de alunos, frames, embeddings)
+# ==========================================
+uploads/alunos/*
+uploads/frames/*
+uploads/embeddings/*
+!uploads/alunos/.gitkeep
+!uploads/frames/.gitkeep
+!uploads/embeddings/.gitkeep
+
+# ==========================================
+# PYTHON
+# ==========================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+*.egg
+dist/
+build/
+*.so
+
+# ==========================================
+# IDE
+# ==========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ==========================================
+# SISTEMA OPERATIVO
+# ==========================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==========================================
+# FICHEIROS TEMPORÁRIOS
+# ==========================================
+*.log
+*.tmp
+*.bak

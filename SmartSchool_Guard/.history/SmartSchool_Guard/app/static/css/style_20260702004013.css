@@ -1,0 +1,643 @@
+/*
+ * SmartSchool Guard - Estilos Personalizados
+ * Tema Bootstrap 5 com cores da escola
+ */
+
+/* ============================================================ */
+/* VARIÁVEIS CSS (TEMAS) */
+/* ============================================================ */
+
+:root {
+    --cor-primaria: #0d6efd;
+    --cor-secundaria: #6c757d;
+    --cor-sucesso: #198754;
+    --cor-perigo: #dc3545;
+    --cor-aviso: #ffc107;
+    --cor-info: #0dcaf0;
+    --cor-escuro: #212529;
+    --cor-claro: #f8f9fa;
+
+    --sidebar-largura: 250px;
+    --navbar-altura: 56px;
+    --transicao-rapida: 0.2s ease;
+    --transicao-normal: 0.3s ease;
+}
+
+/* ============================================================ */
+/* FONTE GLOBAL */
+/* ============================================================ */
+
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f5f6fa;
+    padding-top: var(--navbar-altura);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================================ */
+/* NAVBAR */
+/* ============================================================ */
+
+.navbar {
+    min-height: var(--navbar-altura);
+    background: linear-gradient(135deg, #1a237e, #0d47a1) !important;
+}
+
+.navbar-brand {
+    font-size: 1.2rem;
+    letter-spacing: 0.5px;
+}
+
+.navbar .nav-link {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    transition: background var(--transicao-rapida);
+}
+
+.navbar .nav-link:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.navbar .nav-link.active {
+    background: rgba(255, 255, 255, 0.25);
+    font-weight: 600;
+}
+
+/* Badge de alertas na navbar */
+#badge-alertas {
+    font-size: 0.65rem;
+    padding: 0.25em 0.5em;
+    animation: pulse-badge 2s infinite;
+}
+
+@keyframes pulse-badge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+/* Status na navbar */
+#status-camara,
+#status-esp {
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
+}
+
+/* ============================================================ */
+/* SIDEBAR */
+/* ============================================================ */
+
+.sidebar {
+    position: fixed;
+    top: var(--navbar-altura);
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    background-color: #ffffff;
+}
+
+.sidebar .nav-link {
+    font-size: 0.85rem;
+    color: #495057;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    margin: 2px 8px;
+    transition: all var(--transicao-rapida);
+}
+
+.sidebar .nav-link:hover {
+    background-color: #e9ecef;
+    color: var(--cor-primaria);
+}
+
+.sidebar .nav-link i {
+    font-size: 1rem;
+}
+
+.sidebar-heading {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+}
+
+/* ============================================================ */
+/* CONTEÚDO PRINCIPAL */
+/* ============================================================ */
+
+main {
+    padding-top: 1rem;
+    padding-bottom: 3rem;
+}
+
+/* ============================================================ */
+/* CARDS */
+/* ============================================================ */
+
+.card {
+    border: none;
+    border-radius: 12px;
+    transition: transform var(--transicao-normal), box-shadow var(--transicao-normal);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.card-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+/* Cards do Dashboard */
+.card .display-6,
+.card h2 {
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+/* Card de alerta ativo com borda pulsante */
+.card.border-danger.border-2 {
+    animation: pulse-border 2s infinite;
+}
+
+@keyframes pulse-border {
+    0%, 100% { border-color: var(--cor-perigo); }
+    50% { border-color: #ff6b6b; }
+}
+
+/* ============================================================ */
+/* TABELAS */
+/* ============================================================ */
+
+.table th {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    color: #6c757d;
+    border-bottom-width: 1px;
+}
+
+.table td {
+    font-size: 0.9rem;
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.04);
+}
+
+/* ============================================================ */
+/* BOTÕES */
+/* ============================================================ */
+
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    transition: all var(--transicao-rapida);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+}
+
+.btn-group .btn {
+    border-radius: 0;
+}
+
+.btn-group .btn:first-child {
+    border-radius: 8px 0 0 8px;
+}
+
+.btn-group .btn:last-child {
+    border-radius: 0 8px 8px 0;
+}
+
+/* ============================================================ */
+/* BADGES */
+/* ============================================================ */
+
+.badge {
+    font-weight: 500;
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
+    border-radius: 20px;
+}
+
+/* ============================================================ */
+/* ALERTAS (FLASH MESSAGES) */
+/* ============================================================ */
+
+.alert {
+    border: none;
+    border-radius: 10px;
+    font-size: 0.9rem;
+}
+
+.alert-dismissible .btn-close {
+    padding: 1rem;
+}
+
+/* ============================================================ */
+/* BREADCRUMB */
+/* ============================================================ */
+
+.breadcrumb {
+    font-size: 0.85rem;
+    background: transparent;
+    padding: 0;
+    margin-bottom: 0.5rem;
+}
+
+.breadcrumb-item a {
+    color: var(--cor-primaria);
+    text-decoration: none;
+}
+
+.breadcrumb-item.active {
+    color: #6c757d;
+}
+
+/* ============================================================ */
+/* PROGRESS BAR */
+/* ============================================================ */
+
+.progress {
+    border-radius: 10px;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: width 0.5s ease;
+}
+
+/* ============================================================ */
+/* PAGINAÇÃO */
+/* ============================================================ */
+
+.pagination .page-link {
+    border-radius: 8px;
+    margin: 0 2px;
+    border: none;
+    color: var(--cor-primaria);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--cor-primaria);
+    border-radius: 8px;
+}
+
+/* ============================================================ */
+/* LIST GROUP */
+/* ============================================================ */
+
+.list-group-item {
+    border-left: none;
+    border-right: none;
+    transition: background var(--transicao-rapida);
+}
+
+.list-group-item:first-child {
+    border-top: none;
+}
+
+.list-group-item:hover {
+    background-color: rgba(13, 110, 253, 0.03);
+}
+
+/* ============================================================ */
+/* FOOTER */
+/* ============================================================ */
+
+.footer {
+    margin-top: auto;
+    font-size: 0.85rem;
+}
+
+/* ============================================================ */
+/* PÁGINA DE LOGIN */
+/* ============================================================ */
+
+.login-page {
+    background: linear-gradient(135deg, #1a237e, #0d47a1, #01579b);
+    min-height: 100vh;
+    padding-top: 0;
+}
+
+.login-page .card {
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+}
+
+/* ============================================================ */
+/* CÂMARA - PREVIEW */
+/* ============================================================ */
+
+#video-preview {
+    border-radius: 8px;
+    background: #000;
+}
+
+#canvas-preview {
+    border-radius: 8px;
+}
+
+.camera-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    border: 2px solid #dee2e6;
+}
+
+.camera-guia {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 250px;
+    border: 3px dashed rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* ============================================================ */
+/* ZONA - CANVAS DA LINHA VIRTUAL */
+/* ============================================================ */
+
+#canvas-zona {
+    border-radius: 12px;
+    cursor: default;
+    border: 2px solid #dee2e6;
+    background: #1a1a2e;
+}
+
+#canvas-zona:active {
+    cursor: grabbing;
+}
+
+.zona-coordenadas {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 8px;
+}
+
+/* ============================================================ */
+/* DASHBOARD - ANIMAÇÕES */
+/* ============================================================ */
+
+.pulse-animation {
+    animation: pulse-icon 1.5s infinite;
+}
+
+@keyframes pulse-icon {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+/* Animação de fade-in para cards */
+.fade-in-up {
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================================ */
+/* TOASTS */
+/* ============================================================ */
+
+.toast-container {
+    z-index: 9999;
+}
+
+.toast {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================================ */
+/* SCROLLBAR PERSONALIZADA */
+/* ============================================================ */
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+}
+
+/* Scrollbar escura para áreas escuras */
+.sidebar::-webkit-scrollbar-track,
+.bg-dark::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar::-webkit-scrollbar-thumb,
+.bg-dark::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================================ */
+/* RESPONSIVIDADE */
+/* ============================================================ */
+
+@media (max-width: 767.98px) {
+    .sidebar {
+        position: static;
+        height: auto;
+        box-shadow: none;
+    }
+
+    main {
+        padding: 1rem;
+    }
+
+    .card h2 {
+        font-size: 1.5rem;
+    }
+
+    .table {
+        font-size: 0.8rem;
+    }
+
+    .btn-lg {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .navbar-brand {
+        font-size: 1rem;
+    }
+
+    #canvas-zona {
+        height: 250px !important;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .sidebar {
+        display: none;
+    }
+
+    main {
+        margin-left: 0 !important;
+    }
+}
+
+/* ============================================================ */
+/* IMPRESSÃO */
+/* ============================================================ */
+
+@media print {
+    .navbar,
+    .sidebar,
+    .footer,
+    .btn,
+    .no-print {
+        display: none !important;
+    }
+
+    body {
+        padding-top: 0;
+    }
+
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #dee2e6 !important;
+    }
+
+    .table {
+        font-size: 0.75rem;
+    }
+}
+
+/* ============================================================ */
+/* MODO ESCURO (OPCIONAL - ATIVAR COM CLASSE) */
+/* ============================================================ */
+
+body.dark-mode {
+    background-color: #1a1a2e;
+    color: #e0e0e0;
+}
+
+body.dark-mode .card {
+    background-color: #16213e;
+    color: #e0e0e0;
+}
+
+body.dark-mode .card-header {
+    background-color: #16213e;
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .table {
+    color: #e0e0e0;
+}
+
+body.dark-mode .table-light {
+    background-color: #0f3460;
+    color: #e0e0e0;
+}
+
+body.dark-mode .sidebar {
+    background-color: #16213e;
+}
+
+body.dark-mode .sidebar .nav-link {
+    color: #b0b0b0;
+}
+
+body.dark-mode .sidebar .nav-link:hover {
+    background-color: #0f3460;
+    color: #ffffff;
+}
+
+body.dark-mode .text-muted {
+    color: #a0a0a0 !important;
+}
+
+body.dark-mode .bg-light {
+    background-color: #16213e !important;
+}
+
+body.dark-mode .border {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+    background-color: #0f3460;
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+body.dark-mode .form-control:focus,
+body.dark-mode .form-select:focus {
+    background-color: #0f3460;
+    color: #ffffff;
+}
+
+body.dark-mode .pagination .page-link {
+    background-color: #16213e;
+    color: #e0e0e0;
+}
+
+body.dark-mode .pagination .page-item.active .page-link {
+    background-color: var(--cor-primaria);
+}
+
+body.dark-mode .list-group-item {
+    background-color: #16213e;
+    color: #e0e0e0;
+    border-color: rgba(255, 255, 255, 0.1);
+}
